@@ -1,4 +1,11 @@
-output "ecr_image_url" {
-  value       = "${var.ecr_repository_url}:${var.docker_image_tag}"
-  description = "Full URL to image in ECR with tag"
+output "repository" {
+  value = aws_ecr_repository.repo
+}
+
+output "lifecycle_policy" {
+  value = aws_ecr_lifecycle_policy.lifecycle_policy
+}
+
+output "repository_policy" {
+  value = aws_ecr_repository_policy.repo_policy
 }

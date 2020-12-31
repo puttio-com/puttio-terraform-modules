@@ -1,23 +1,26 @@
 terraform {
   required_version = ">= 0.14"
   required_providers {
-    aws = ">= 2.42"
+    aws = ">= 3.0.0"
   }
 }
 
-# Checks if build folder has changed
-data "external" "build_dir" {
-  program = ["bash", "${path.module}/bin/dir_md5.sh", var.dockerfile_dir]
+resource "aws_ecr_repository" "repo" {
+  name = var.name
+
+  image_tag_mutability = var.image_tag_mutability
+  image_scanning_configuration {
+    scan_on_push = var.scan_image_on_push
+  }
+
+  tags = var.tags
 }
 
-# Builds test-service and pushes it into aws_ecr_repository
-resource "null_resource" "ecr_image" {
-  triggers = {
-    build_folder_content_md5 = data.external.build_dir.result.md5
-  }
-
-  # Runs the build.sh script which builds the dockerfile and pushes to ecr
-  provisioner "local-exec" {
-    command = "bash ${path.module}/bin/build.sh ${var.dockerfile_dir} ${var.ecr_repository_url}:${var.docker_image_tag}"
-  }
+resource "aws_ecr_lifecycle_policy" "lifecycle_policy" {
+  policy     = var.lifecycle_policy
+  repository = aws_ecr_repository.repo.name
+}
+resource "aws_ecr_repository_policy" "repo_policy" {
+  policy     = var.repository_policy
+  repository = aws_ecr_repository.repo.name
 }
