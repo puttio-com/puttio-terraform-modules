@@ -1,3 +1,3 @@
-# puttio-terraform-modules
+# xomoro-terraform-modules
 
-Terraform modules for building Puttio standard cloud resources.
+Terraform modules for building Xomoro standard cloud resources.
